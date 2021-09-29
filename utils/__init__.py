@@ -1,1 +1,1 @@
-from funcs import sudo_su, write_cron, scp, modify_cron
+from . import funcs
