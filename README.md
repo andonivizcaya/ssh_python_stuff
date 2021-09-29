@@ -1,2 +1,8 @@
-# nigger_fag_paramiko
-WTF dood
+# Usage
+Ez clap
+
+```
+from utils import *
+```
+
+ez
