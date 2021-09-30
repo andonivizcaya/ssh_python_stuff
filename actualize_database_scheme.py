@@ -1,12 +1,22 @@
 from utils.funcs import Funcs
+from datetime import date
+import pexpect
 
 
 #1.- Obtener lista de rutas hacia carpetas en /u/firebird25/wrk/
 # Solución: usar un comando sudo_su - firebird25 que haga ls -l a /u/firebird25/wrk/ y que entregue una lista con las carpetas.
 # **generar tal función en funcs
 
+commit = "git commit -m \"update-{}\"".format(date.today().strftime("%Y%m%d"))
+
+Funcs.git_push('./', commit)
+
+#Funcs.sudo_su("git add /u/firebird25/wrk/*", commit, "git push origin main")
+
 #2.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
 # Solución: usar la función sudo_su ya creada
+
+#Funcs.sudo_su()
 
 #3.- Ejecutar respaldo N1 modificando el cron
 # Solución: usar sudo_su y pasar como parámetro comando para modificar cron (ver func -> modify_cron)
@@ -32,5 +42,3 @@ from utils.funcs import Funcs
 
 #8.- Renombrar base nuevamente
 # Solución: conectarse a rod.fsz, todd.fsz o ned.fsz con el usuario athos, hacer sudo_su al uduario bkp-firebird con los argumentos cd <ruta_base> mv <nombre base original> <nombre base>
-
-Funcs.sudo_su("cd /u/firebird25/wrk/")
