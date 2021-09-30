@@ -22,9 +22,15 @@ from utils.funcs import Funcs
 # Conectarse nuevamente pero esta vez con la función sud_su normal y pasar como argumento source setEnvFB25<letra>.env y el comando isql -x.
 
 #6.- Ejecutar actualización base
-# Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird y pasar como argumentos cd /u/firebird25/wrk/SigadWebVersion_09082021/update_bd_20210908,
+# Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos cd /u/firebird25/wrk/SigadWebVersion_09082021/update_bd_20210908,
 #echo $FIREBIRD, export FIREBIRD_MSG=/opt/firebird25, isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i <ruta a .sql>
 
-#7.- 
+#7.- Actualizar versión Sigad
+# Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos
+# isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i /u/firebird25/wrk/SigadWebVersion_20092021/upd_version.sql
+# upd_version.sql se encuentra en la ruta original del update
+
+#8.- Renombrar base nuevamente
+# Solución: conectarse a rod.fsz, todd.fsz o ned.fsz con el usuario athos, hacer sudo_su al uduario bkp-firebird con los argumentos cd <ruta_base> mv <nombre base original> <nombre base>
 
 Funcs.sudo_su("cd /u/firebird25/wrk/")
