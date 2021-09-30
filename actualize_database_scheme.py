@@ -1,20 +1,26 @@
 from utils.funcs import Funcs
 from datetime import date
 import pexpect
+import subprocess
+import os
 
 
-#1.- Obtener lista de rutas hacia carpetas en /u/firebird25/wrk/
+#1.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
+# Solución: usar la función sudo_su ya creada
+
+#upd_list = os.listdir('/u/firebird25/wrk/')
+
+#subprocess.Popen(["ls", "-l", "/u/firebird25/wrk/"])
+
+#Funcs.sudo_su("git add /u/firebird25/wrk/*", commit, "git push origin main")
+
+#2.- Obtener lista de rutas hacia carpetas en /u/firebird25/wrk/
 # Solución: usar un comando sudo_su - firebird25 que haga ls -l a /u/firebird25/wrk/ y que entregue una lista con las carpetas.
 # **generar tal función en funcs
 
 commit = "\"update-{}\"".format(date.today().strftime("%Y%m%d"))
 
 Funcs.git_push('./', commit)
-
-#Funcs.sudo_su("git add /u/firebird25/wrk/*", commit, "git push origin main")
-
-#2.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
-# Solución: usar la función sudo_su ya creada
 
 #Funcs.sudo_su()
 
