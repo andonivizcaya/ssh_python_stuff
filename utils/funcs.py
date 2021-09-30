@@ -183,10 +183,13 @@ class Funcs:
     def git_push(path_to_repo, commit):
         try:
             repo = Repo(path_to_repo)
+            repo.git.c
             repo.git.add(update=True)
             repo.index.commit(commit)
             origin = repo.remote(name='origin')
-            origin.push('origin', 'main')
+            origin.push()
         except:
             print('Problemas al hacer push.')
 
+
+        
