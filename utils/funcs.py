@@ -6,6 +6,8 @@ pretty.install()
 
 
 class Funcs:
+
+
     # funtion that a modifies existing cronjob
     def modify_cron():
         # Initialize constructor
@@ -71,11 +73,61 @@ class Funcs:
         client.close()
 
 
-    # function to make scp between remote servers
-    def scp(**kwarg):
+    def sudo_su_list(*args, **kwargs):
 
-        for arg in kwarg.items():
-            command =+ f"{arg};"
+        command = ""
+        for arg in args:
+            command = command + arg + ";"
+
+        # Initialize constructor
+        client = SSHClient()
+
+        # data (As parameters. Eg: def sudo_su(filename, remote_server_2_username, remote_server_2, remote_server_2_password):)
+        # exec_command("cd /u/firebird25/wrk/SigadWebVersion_09082021/;expect -c 'spawn scp ./" + "...")
+        filename = "echocito"
+        remote_server_2_username = "odoo"
+        remote_server_2 = "192.168.7.46"
+        remote_server_2_password = "odoo"
+
+        # Load Host Keys
+        client.load_host_keys('/home/avizcaya/.ssh/known_hosts')
+        client.load_system_host_keys()
+
+        # known_hosts policy
+        client.set_missing_host_key_policy(AutoAddPolicy())
+
+        client.connect(remote_server_2, username='andoni')
+
+        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\""
+
+        # make sudo su - user commands
+        stdin_, stdout_, stderr_ = client.exec_command(full_command, get_pty=True)
+        status_ = stdout_.channel.recv_exit_status()
+
+        lista_de_weas = stdout_.read().decode("utf-8").split('\n')[3:]
+        lista_de_otras_weas = []
+        for wea in lista_de_weas:
+            print(wea)
+            lista_de_otras_weas.append(wea.split(' ')[-1].replace('\r', ''))
+
+        print(f'STDOUT: {stdout_.read().decode("utf-8")}')
+        print(f'STDERR: {stderr_.read().decode("utf-8")}')
+
+        (lista_de_otras_weas)
+
+        stdin_.close()
+        stdout_.close()
+        stderr_.close()
+
+        client.close()
+
+
+    # function to make scp between remote servers
+    def scp(*args,**kwargs):
+
+        command = ""
+        for arg in args:
+            command = command + arg + ";"
         # Initialize constructor
         client = SSHClient()
 
@@ -85,6 +137,10 @@ class Funcs:
         remote_server_2_username = "my_username"
         remote_server_2 = "my_local_host"
         remote_server_2_password = "my_pass"
+
+        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\";interact';"
+        full_command_scp = "expect -c 'spawn scp ./" + filename + ".log " + remote_server_2_username + "@" + remote_server_2 + ":/home/"+ remote_server_2_username +";expect password;send \"" + remote_server_2_password + "\r\";interact'"
+
 
         # Load Host Keys
         client.load_host_keys('/home/avizcaya/.ssh/known_hosts')
@@ -110,14 +166,12 @@ class Funcs:
 
 
     # function to execute commands as another user using sudo su
-    def sudo_su(*args):
+    def sudo_su(*args, **kwargs):
 
         command = ""
-        print(type(command))
         for arg in args:
             command = command + arg + ";"
 
-        print(command)
         # Initialize constructor
         client = SSHClient()
 
@@ -137,24 +191,22 @@ class Funcs:
 
         client.connect(remote_server_2, username='andoni')
 
-        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\";interact'"
+        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\""
 
-        print(full_command)
-
-        # scp to local machine
+        # make sudo su - user commands
         stdin_, stdout_, stderr_ = client.exec_command(full_command, get_pty=True)
         status_ = stdout_.channel.recv_exit_status()
 
-        lista_de_weas = stdout_.read().decode("utf-8").split('\n')[3:]
-        lista_de_otras_weas = []
-        for wea in lista_de_weas:
-            print(wea)
-            lista_de_otras_weas.append(wea.split(' ')[-1].replace('\r', ''))
+        # lista_de_weas = stdout_.read().decode("utf-8").split('\n')[3:]
+        # lista_de_otras_weas = []
+        # for wea in lista_de_weas:
+        #     print(wea)
+        #     lista_de_otras_weas.append(wea.split(' ')[-1].replace('\r', ''))
 
         print(f'STDOUT: {stdout_.read().decode("utf-8")}')
         print(f'STDERR: {stderr_.read().decode("utf-8")}')
 
-        print(lista_de_otras_weas)
+        #(lista_de_otras_weas)
 
         stdin_.close()
         stdout_.close()
