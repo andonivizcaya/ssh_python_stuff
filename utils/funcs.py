@@ -186,6 +186,7 @@ class Funcs:
             repo.git.add(update=True)
             repo.index.commit(commit)
             origin = repo.remote(name='origin')
-            origin.push()
+            origin.push('main')
         except:
-            print('Problemas al hacer push.')    
+            print('Problemas al hacer push.')
+

@@ -7,7 +7,7 @@ import pexpect
 # Solución: usar un comando sudo_su - firebird25 que haga ls -l a /u/firebird25/wrk/ y que entregue una lista con las carpetas.
 # **generar tal función en funcs
 
-commit = "git commit -m \"update-{}\"".format(date.today().strftime("%Y%m%d"))
+commit = "\"update-{}\"".format(date.today().strftime("%Y%m%d"))
 
 Funcs.git_push('./', commit)
 
