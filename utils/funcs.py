@@ -12,7 +12,8 @@ pretty.install()
 class Funcs:
 
 
-    def connect_ssh(ssh_server, ssh_user):
+    def connect_ssh(ssh_server, ssh_user, ssh_pass=None):
+
         client = SSHClient()
 
         # Load Host Keys
@@ -22,12 +23,12 @@ class Funcs:
         # known_hosts policy
         client.set_missing_host_key_policy(AutoAddPolicy())
 
-        client.connect(ssh_server, username='ssh_user')
+        client.connect(ssh_server, username=ssh_user, password=ssh_pass)
 
         return client
 
     # funtion that a modifies existing cronjob
-    def modify_cron(client):
+    def modify_cron(client, *args):
 
         # get all cron
         stdin, stdout, stderr = client.exec_command('crontab -l')
@@ -131,30 +132,16 @@ class Funcs:
 
 
     # function to execute commands as another user using sudo su
-    def sudo_su(*args, **kwargs):
+    def sudo_su(client, *args, **kwargs):
 
         command = ""
         for arg in args:
             command = command + arg + ";"
 
-        # Initialize constructor
-        client = SSHClient()
-
         # data (As parameters. Eg: def sudo_su(filename, remote_server_2_username, remote_server_2, remote_server_2_password):)
         # exec_command("cd /u/firebird25/wrk/SigadWebVersion_09082021/;expect -c 'spawn scp ./" + "...")
-        filename = "echocito"
-        remote_server_2_username = "odoo"
-        remote_server_2 = "192.168.7.46"
-        remote_server_2_password = "odoo"
-
-        # Load Host Keys
-        client.load_host_keys('/home/avizcaya/.ssh/known_hosts')
-        client.load_system_host_keys()
-
-        # known_hosts policy
-        client.set_missing_host_key_policy(AutoAddPolicy())
-
-        client.connect(remote_server_2, username='andoni')
+        remote_server_2_username = "root"
+        remote_server_2_password = "Sprt.1215"       
 
         full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\""
 
@@ -162,16 +149,10 @@ class Funcs:
         stdin_, stdout_, stderr_ = client.exec_command(full_command, get_pty=True)
         status_ = stdout_.channel.recv_exit_status()
 
-        # lista_de_weas = stdout_.read().decode("utf-8").split('\n')[3:]
-        # lista_de_otras_weas = []
-        # for wea in lista_de_weas:
-        #     print(wea)
-        #     lista_de_otras_weas.append(wea.split(' ')[-1].replace('\r', ''))
 
         print(f'STDOUT: {stdout_.read().decode("utf-8")}')
         print(f'STDERR: {stderr_.read().decode("utf-8")}')
 
-        #(lista_de_otras_weas)
 
         stdin_.close()
         stdout_.close()

@@ -5,46 +5,86 @@ import subprocess
 import os
 
 
-#1.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
-# Solución: usar la función sudo_su ya creada
+def actualizar_bases():
 
-#upd_list = os.listdir('/u/firebird25/wrk/')
+    #1.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
+    # Solución: usar la función sudo_su ya creada
 
-#subprocess.Popen(["ls", "-l", "/u/firebird25/wrk/"])
+    upd_list = os.listdir('/u/firebird25/wrk/')
 
-#Funcs.sudo_su("git add /u/firebird25/wrk/*", commit, "git push origin main")
+    subprocess.Popen(["ls", "-l", "/u/firebird25/wrk/"])
 
-#2.- Obtener lista de rutas hacia carpetas en /u/firebird25/wrk/
-# Solución: usar un comando sudo_su - firebird25 que haga ls -l a /u/firebird25/wrk/ y que entregue una lista con las carpetas.
-# **generar tal función en funcs
+    #Funcs.sudo_su("git add /u/firebird25/wrk/*", commit, "git push origin main")
 
-commit = "\"update-{}\"".format(date.today().strftime("%Y%m%d"))
+    #2.- Obtener lista de rutas hacia carpetas en /u/firebird25/wrk/
+    # Solución: usar un comando sudo_su - firebird25 que haga ls -l a /u/firebird25/wrk/ y que entregue una lista con las carpetas.
+    # **generar tal función en funcs
 
-Funcs.git_push('./', commit)
+    commit = "\"update-{}\"".format(date.today().strftime("%Y%m%d"))
 
-#Funcs.sudo_su()
+    Funcs.git_push('./', commit)
+    #Funcs.git_push('/u/firebird25/wrk/', commit)
 
-#3.- Ejecutar respaldo N1 modificando el cron
-# Solución: usar sudo_su y pasar como parámetro comando para modificar cron (ver func -> modify_cron)
+    #Funcs.sudo_su()
 
-#4.- Desconectar usuarios
-# Solución: conectarse al servidor rod.fsz, todd.fsz o ned.fsz, usar sudo_su al usuario bkp_frebird, mover la base.
-# Luego desconectarse y hacer sudo_su a root pasando como argumento el comandoo fuserk <ruta base>/<nombre base original>.
-# Desconectarse de root y usar sudo_su a bkp-firebird con argumentos cd ~/bkp_bases, mkdir AAAMMDD, cp <ruta base>/<nombre base original> /home/bkp-firebird/bkp_bases /AAAAMMDD/
+    #3.- Ejecutar respaldo N1 modificando el cron
+    # Solución: usar sudo_su y pasar como parámetro comando para modificar cron (ver func -> modify_cron)
 
-#5.- Respaldar metadata base
-# Solución: conectarse al servidor rod.fsz, todd.fsz o ned.fsz, usar sudo_su al usuario bkp_frebird.
-# Pasar como argumentos cd ~, ls setEnvFB25*.env y listar las variables de ambiente.
-# Conectarse nuevamente pero esta vez con la función sud_su normal y pasar como argumento source setEnvFB25<letra>.env y el comando isql -x.
+    client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
+    Funcs.modify_cron(client)
 
-#6.- Ejecutar actualización base
-# Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos cd /u/firebird25/wrk/SigadWebVersion_09082021/update_bd_20210908,
-#echo $FIREBIRD, export FIREBIRD_MSG=/opt/firebird25, isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i <ruta a .sql>
+    #4.- Desconectar usuarios
+    # Solución: conectarse al servidor rod.fsz, todd.fsz o ned.fsz, usar sudo_su al usuario bkp-frebird, mover la base.
+    # Luego desconectarse y hacer sudo_su a root pasando como argumento el comandoo fuserk <ruta base>/<nombre base original>.
+    # Desconectarse de root y usar sudo_su a bkp-firebird con argumentos cd ~/bkp_bases, mkdir AAAMMDD, cp <ruta base>/<nombre base original> /home/bkp-firebird/bkp_bases /AAAAMMDD/
 
-#7.- Actualizar versión Sigad
-# Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos
-# isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i /u/firebird25/wrk/SigadWebVersion_20092021/upd_version.sql
-# upd_version.sql se encuentra en la ruta original del update
+    client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
+    stdin, stdout,stderr = client.exec_command(f'mv {ruta_base}/{nombre_base} {ruta_base}/{nombre_base_original}')
+    stdin.close()
+    stdout.close()
+    stderr.close()
 
-#8.- Renombrar base nuevamente
-# Solución: conectarse a rod.fsz, todd.fsz o ned.fsz con el usuario athos, hacer sudo_su al uduario bkp-firebird con los argumentos cd <ruta_base> mv <nombre base original> <nombre base>
+    client = Funcs.connect_ssh(ssh_server, 'athos', ssh_pass)
+    command = "fuser -k " + ruta_base + "/" + nombre_base + " " + ruta_base + "/" + nombre_base_original
+    Funcs.sudo_su(client, command)
+
+    client = Funcs.connect_ssh(ssh_server, 'bkp-firebird', ssh_pass)
+    stdin, stdout,stderr = client.exec_command(f'mkdir /home/bkp-firebird/bkp_bases/{aaaammdd}')
+    stdin.close()
+    stdout.close()
+    stderr.close()
+    stdin, stdout,stderr = client.exec_command(f'cp {ruta_base}/{nombre_base_original} /home/bkp-firebird/bkp_bases/{aaaammdd}/')
+    stdin.close()
+    stdout.close()
+    stderr.close()
+
+    #5.- Respaldar metadata base
+    # Solución: conectarse al servidor rod.fsz, todd.fsz o ned.fsz, usar sudo_su al usuario bkp_frebird.
+    # Pasar como argumentos cd ~, ls setEnvFB25*.env y listar las variables de ambiente.
+    # Conectarse nuevamente pero esta vez con la función sud_su normal y pasar como argumento source setEnvFB25<letra>.env y el comando isql -x.
+
+    client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
+    stdin, stdout,stderr = client.exec_command(f'source setEnvFB25{env_var}.env')
+    stdin.close()
+    stdout.close()
+    stderr.close()
+    stdin, stdout,stderr = client.exec_command(f'isql -x {ruta_base} -user {usuario} -password {password} -o bkp_bases/{aaaammdd}/respaldo_metadata{alias_base}_ddmmaaaa.sql')
+    stdin.close()
+    stdout.close()
+    stderr.close()
+
+    client.close()
+
+    #6.- Ejecutar actualización base
+    # Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos cd /u/firebird25/wrk/SigadWebVersion_09082021/update_bd_20210908,
+    #echo $FIREBIRD, export FIREBIRD_MSG=/opt/firebird25, isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i <ruta a .sql>
+
+    subprocess.Popen(["cd", f"/u/firebird25/wrk/SigadWeb_{ddmmaaaa}"])
+
+    #7.- Actualizar versión Sigad
+    # Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos
+    # isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i /u/firebird25/wrk/SigadWebVersion_20092021/upd_version.sql
+    # upd_version.sql se encuentra en la ruta original del update
+
+    #8.- Renombrar base nuevamente
+    # Solución: conectarse a rod.fsz, todd.fsz o ned.fsz con el usuario athos, hacer sudo_su al uduario bkp-firebird con los argumentos cd <ruta_base> mv <nombre base original> <nombre base>
