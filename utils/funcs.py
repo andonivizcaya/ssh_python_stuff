@@ -17,7 +17,7 @@ class Funcs:
         client = SSHClient()
 
         # Load Host Keys
-        client.load_host_keys('/home/avizcaya/.ssh/known_hosts')
+        client.load_host_keys('/home/firebird25/.ssh/known_hosts')
         client.load_system_host_keys()
 
         # known_hosts policy
@@ -164,7 +164,6 @@ class Funcs:
     def git_push(path_to_repo, commit):
         try:
             repo = Repo(path_to_repo)
-            repo.git.c
             repo.git.add(update=True)
             repo.index.commit(commit)
             origin = repo.remote(name='origin')

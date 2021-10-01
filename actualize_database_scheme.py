@@ -168,10 +168,10 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     subprocess.Popen(["export", "FIREBIRD_MSG=/opt/firebird25"])
     subprocess.Popen(["isql", + motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], cwd=ruta_update_bd)
 
-    if process == 'deadlock':
-        subprocess.Popen(["isql", + motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], cwd=ruta_update_bd)
-    else:
-        pass
+    # if process == 'deadlock':
+    #     subprocess.Popen(["isql", + motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], cwd=ruta_update_bd)
+    # else:
+    #     pass
 
     #7.- Actualizar versión Sigad
     # Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos
