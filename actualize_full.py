@@ -3,6 +3,7 @@ from datetime import date
 import pexpect
 import subprocess
 import os
+import csv
 
 
 def actualizar_bases(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
@@ -194,4 +195,15 @@ def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, passwo
     sftp = client.open_sftp()
     sftp.put(ruta_sigad_web, '/home/athos')
 
-    
+    #enviar al jimmy la aplicación comprimida
+
+
+
+
+def read_file(file_name):
+	for row in open(file_name, 'r'):
+		yield row
+
+
+for row in read_file('./actualizar.csv'):
+    print(row)
