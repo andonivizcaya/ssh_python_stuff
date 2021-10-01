@@ -184,3 +184,14 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     # Solución: conectarse a rod.fsz, todd.fsz o ned.fsz con el usuario athos, hacer sudo_su al uduario bkp-firebird con los argumentos cd <ruta_base> mv <nombre base original> <nombre base>
 
     subprocess.Popen(["mv", nombre_base_original, nombre_base], cwd=ruta_base)
+
+
+def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
+    ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web + '/*.war'
+
+    client = Funcs.connect_ssh('johnny.fsz', 'athos')
+
+    sftp = client.open_sftp()
+    sftp.put(ruta_sigad_web, '/home/athos')
+
+    
