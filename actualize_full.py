@@ -31,8 +31,8 @@ def actualizar_bases(motor, ssh_server, ruta_base, nombre_base, usuario, passwor
     if len(upd_database) == 1:
         subprocess.Popen(["mkdir", update_bd], cwd=ruta_sigad_web)
         subprocess.Popen(["cp", upd_database[0], update_bd], cwd=ruta_sigad_web)
-        subprocess.Popen(["bzip2", "-b", upd_database[0]], cwd= ruta_update_bd)
-        subprocess.Popen(["tar", "-xvf", upd_database[0].replace(".bz2", "")])
+        subprocess.Popen(["bzip2", "-b", upd_database[0]], cwd=ruta_update_bd)
+        subprocess.Popen(["tar", "-xvf", upd_database[0].replace(".bz2", "")], cwd=ruta_update_bd)
     else:
         print('Más de un archivo .tar.bz2')
 
@@ -70,6 +70,8 @@ def ejecutar_n1(motor, ssh_server, ruta_base, nombre_base, usuario, password, al
     client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
     Funcs.modify_cron(client, motor)
 
+    client.close()
+
 def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
 
     ddmmaaaa = carpeta_sigad_web.split('SigadWebVersion_')[1]
@@ -93,6 +95,8 @@ def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     stdout.close()
     stderr.close()
 
+    client.close()
+
     ssh_pass = 'Sprt.1215'
 
     client = Funcs.connect_ssh('localhost', 'athos', ssh_pass)
@@ -100,8 +104,9 @@ def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     bkp_base = "/home/bkp-firebird/bkp_bases/" + aaaammdd
     Funcs.sudo_su(client, command)
 
+    client.close()
 
-    client = Funcs.connect_ssh(ssh_server, 'bkp-firebird', ssh_pass)
+    client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
     stdin, stdout,stderr = client.exec_command("mkdir " +  bkp_base)
     stdin.close()
     stdout.close()
@@ -110,6 +115,8 @@ def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     stdin.close()
     stdout.close()
     stderr.close()
+
+    client.close()
 
 
 def respaldar_metadata(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):

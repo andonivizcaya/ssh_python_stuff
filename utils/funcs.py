@@ -10,8 +10,6 @@ pretty.install()
 
 
 class Funcs:
-
-
     def connect_ssh(ssh_server, ssh_user, ssh_pass=None):
 
         client = SSHClient()
@@ -52,9 +50,9 @@ class Funcs:
         cron_list = stdout.read().decode('utf-8').split('\n')
 
         for line in cron_list:
-            if line.__contains__(motor):
+            if line.__contains__(motor) and line.__contains__(' 1 '):
                 i = cron_list.index(line)
-                cron_list[i + 1] =  minute + ' ' + hour + cron_list[i + 1, 3:]
+                cron_list[i] =  minute + ' ' + hour + cron_list[i][3:]
 
         # Remove all cron
         stdin, stdout, stderr = client.exec_command('echo " " | crontab -')
