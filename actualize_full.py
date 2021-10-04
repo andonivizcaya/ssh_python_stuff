@@ -3,9 +3,12 @@ from datetime import date
 import pexpect
 import subprocess
 import os
+import sys
 import csv
 
 
+## Parte 1
+# Actualizar esquema de base de datos
 def actualizar_bases(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
 
     #1.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
@@ -58,12 +61,12 @@ def push_github(motor, ssh_server, ruta_base, nombre_base, usuario, password, al
 
 def ejecutar_n1(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
 
-    ddmmaaaa = carpeta_sigad_web.split('SigadWebVersion_')[1]
-    aaaammdd = ddmmaaaa[4:] + ddmmaaaa[2:4] + ddmmaaaa[:2]
+    #ddmmaaaa = carpeta_sigad_web.split('SigadWebVersion_')[1]
+    #aaaammdd = ddmmaaaa[4:] + ddmmaaaa[2:4] + ddmmaaaa[:2]
 
-    ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
-    update_bd = "update_bd_" + aaaammdd
-    ruta_update_bd = ruta_sigad_web + "/" + update_bd
+    #ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
+    #update_bd = "update_bd_" + aaaammdd
+    #ruta_update_bd = ruta_sigad_web + "/" + update_bd
     #3.- Ejecutar respaldo N1 modificando el cron
     # Solución: usar sudo_su y pasar como parámetro comando para modificar cron (ver func -> modify_cron)
 
@@ -172,14 +175,18 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     #6.- Ejecutar actualización base
     # Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos cd /u/firebird25/wrk/SigadWebVersion_09082021/update_bd_20210908,
     #echo $FIREBIRD, export FIREBIRD_MSG=/opt/firebird25, isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i <ruta a .sql>
-
     subprocess.Popen(["export", "FIREBIRD_MSG=/opt/firebird25"])
-    subprocess.Popen(["isql", + motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], cwd=ruta_update_bd)
+    process = subprocess.Popen(["isql", motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT , cwd=ruta_update_bd)
+    with open(ruta_update_bd + '/log_isql.log', 'w') as f:
+        for line in process.stdout:
+            f.write(line.decode('utf-8'))
+        process.wait()
 
-    # if process == 'deadlock':
-    #     subprocess.Popen(["isql", + motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], cwd=ruta_update_bd)
-    # else:
-    #     pass
+    with open(ruta_update_bd + '/log_isql.log', 'r') as f:
+        lines = f.readlines()
+        for line in lines[-5:]:
+            if line.__contains__('deadlock'):
+                subprocess.Popen(["isql", motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")])
 
     #7.- Actualizar versión Sigad
     # Solución: conectarse a firebird25.moe.etrade.cl, aplicar sudo_su con usuario firebird25 y pasar como argumentos
@@ -194,6 +201,8 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     subprocess.Popen(["mv", nombre_base_original, nombre_base], cwd=ruta_base)
 
 
+## Parte 2
+# Actualizar WebApps
 def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
     ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
 
@@ -218,3 +227,8 @@ def read_file(file_name):
 
 for row in read_file('./actualizar1.csv'):
     print(row.replace('\n', ''))
+
+
+
+
+#ejecutar_n1(motor='echocito.sh', ssh_server='willie02.fsz', ruta_base=None, nombre_base=None, usuario=None, password=None, alias_base=None, carpeta_sigad_web=None)

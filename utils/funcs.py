@@ -30,12 +30,12 @@ class Funcs:
 
         # Get time to use it in the new cron. time_list[0] = hour, time_list[1] = minute
         stdin, stdout, stderr = client.exec_command('date +"%T"')
-        time_list = stdout.read().decode('utf-8').replace('\n').split(':')
+        time_list = stdout.read().decode('utf-8').replace('\n', '').split(':')
 
-        minute = str(int(time_list[1]) + 2)
+        minute = str(int(time_list[1]) + 1)
         hour = time_list[0]
 
-        if minute > int(minute) > 60:
+        if int(minute) > 60:
             minute = str(int(minute) - 60)
             hour = str(int(hour) + 1)
             if int(hour) > 23:
@@ -52,7 +52,7 @@ class Funcs:
         for line in cron_list:
             if line.__contains__(motor) and line.__contains__(' 1 '):
                 i = cron_list.index(line)
-                cron_list[i] =  minute + ' ' + hour + cron_list[i][3:]
+                cron_list[i] =  minute.rjust(2, '0') + ' ' + hour.rjust(2, '0') + cron_list[i][5:]
 
         # Remove all cron
         stdin, stdout, stderr = client.exec_command('echo " " | crontab -')
