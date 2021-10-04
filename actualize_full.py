@@ -215,6 +215,9 @@ def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, passwo
             sftp.put(ruta_sigad_web + '/' + file, '/home/athos/'+ file)
             sftp.close()
 
+            #client.exec_command()
+
+
     #enviar al jimmy la aplicación comprimida
 
 
