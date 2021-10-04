@@ -28,22 +28,40 @@ class Funcs:
         return client
 
     # funtion that a modifies existing cronjob
-    def modify_cron(client, *args):
+    def modify_cron(client, motor):
+
+        # Get time to use it in the new cron. time_list[0] = hour, time_list[1] = minute
+        stdin, stdout, stderr = client.exec_command('date +"%T"')
+        time_list = stdout.read().decode('utf-8').replace('\n').split(':')
+
+        minute = str(int(time_list[1]) + 2)
+        hour = time_list[0]
+
+        if minute > int(minute) > 60:
+            minute = str(int(minute) - 60)
+            hour = str(int(hour) + 1)
+            if int(hour) > 23:
+                hour = str(int(hour) - 23)
+
+        stdin.close()
+        stdout.close()
+        stderr.close()
 
         # get all cron
         stdin, stdout, stderr = client.exec_command('crontab -l')
         cron_list = stdout.read().decode('utf-8').split('\n')
 
         for line in cron_list:
-            if line.__contains__('magico1'):
+            if line.__contains__(motor):
                 i = cron_list.index(line)
-                cron_list[i + 1] = '#' + cron_list[i + 1]
-            if line.__contains__('magico2'):
-                i = cron_list.index(line)
-                cron_list[i + 1] = '5' + cron_list[i + 1][1:]
+                cron_list[i + 1] =  minute + ' ' + hour + cron_list[i + 1, 3:]
 
         # Remove all cron
         stdin, stdout, stderr = client.exec_command('echo " " | crontab -')
+
+        stdin.close()
+        stdout.close()
+        stderr.close()
 
         # add moddified cron
         for new_line in cron_list:

@@ -188,12 +188,16 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
 
 
 def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
-    ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web + '/*.war'
+    ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
 
+    files = os.listdir(ruta_sigad_web)
     client = Funcs.connect_ssh('johnny.fsz', 'athos')
+    for file in files:
+        if file.__contains__('.war'):
 
-    sftp = client.open_sftp()
-    sftp.put(ruta_sigad_web, '/home/athos')
+            sftp = client.open_sftp()
+            sftp.put(ruta_sigad_web + '/' + file, '/home/athos/'+ file)
+            sftp.close()
 
     #enviar al jimmy la aplicación comprimida
 
@@ -205,5 +209,5 @@ def read_file(file_name):
 		yield row
 
 
-for row in read_file('./actualizar.csv'):
-    print(row)
+for row in read_file('./actualizar1.csv'):
+    print(row.replace('\n', ''))
