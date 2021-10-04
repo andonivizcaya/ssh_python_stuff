@@ -68,7 +68,7 @@ def ejecutar_n1(motor, ssh_server, ruta_base, nombre_base, usuario, password, al
     # Solución: usar sudo_su y pasar como parámetro comando para modificar cron (ver func -> modify_cron)
 
     client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
-    Funcs.modify_cron(client)
+    Funcs.modify_cron(client, motor)
 
 def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
 
