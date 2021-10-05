@@ -87,7 +87,7 @@ def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     mv_hacia = ruta_base + "/" + nombre_base_original
 
     client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
-    stdin, stdout,stderr = client.exec_command("mv " + mv_desde + " " + mv_hacia)
+    stdin, stdout, stderr = client.exec_command("mv " + mv_desde + " " + mv_hacia)
     stdin.close()
     stdout.close()
     stderr.close()
@@ -96,7 +96,7 @@ def desconectar_usuarios(motor, ssh_server, ruta_base, nombre_base, usuario, pas
 
     ssh_pass = 'Sprt.1215'
 
-    client = Funcs.connect_ssh('localhost', 'athos', ssh_pass)
+    client = Funcs.connect_ssh(ssh_server, 'athos', ssh_pass)
     command = "fuser -k " + ruta_base + "/" + nombre_base + " " + ruta_base + "/" + nombre_base_original
     bkp_base = "/home/bkp-firebird/bkp_bases/" + aaaammdd
     Funcs.sudo_su(client, command)
@@ -135,7 +135,7 @@ def respaldar_metadata(motor, ssh_server, ruta_base, nombre_base, usuario, passw
     # Conectarse nuevamente pero esta vez con la función sud_su normal y pasar como argumento source setEnvFB25<letra>.env y el comando isql -x.
 
     client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
-    
+
     stdin, stdout,stderr = client.exec_command("source setEnvFB25" + letra + ".env")
     stdin.close()
     stdout.close()
@@ -199,11 +199,11 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
 
 ## Parte 2
 # Actualizar WebApps
-def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
+def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web): #tomcat, #nombre_app, #usuario**, #nombre_app_cliente
     ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
 
     files = os.listdir(ruta_sigad_web)
-    client = Funcs.connect_ssh('johnny.fsz', 'athos')
+    client = Funcs.connect_ssh(ssh_server, 'athos')
     for file in files:
         if file.__contains__('.war'):
 
@@ -211,7 +211,12 @@ def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, passwo
             sftp.put(ruta_sigad_web + '/' + file, '/home/athos/'+ file)
             sftp.close()
 
-            #client.exec_command()
+            client.exec_command('/home/ahthos/actualizar_webapps.sh')
+
+
+
+            
+            
 
 
     #enviar al jimmy la aplicación comprimida
