@@ -61,12 +61,6 @@ def push_github(motor, ssh_server, ruta_base, nombre_base, usuario, password, al
 
 def ejecutar_n1(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
 
-    #ddmmaaaa = carpeta_sigad_web.split('SigadWebVersion_')[1]
-    #aaaammdd = ddmmaaaa[4:] + ddmmaaaa[2:4] + ddmmaaaa[:2]
-
-    #ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
-    #update_bd = "update_bd_" + aaaammdd
-    #ruta_update_bd = ruta_sigad_web + "/" + update_bd
     #3.- Ejecutar respaldo N1 modificando el cron
     # Solución: usar sudo_su y pasar como parámetro comando para modificar cron (ver func -> modify_cron)
 
@@ -141,10 +135,12 @@ def respaldar_metadata(motor, ssh_server, ruta_base, nombre_base, usuario, passw
     # Conectarse nuevamente pero esta vez con la función sud_su normal y pasar como argumento source setEnvFB25<letra>.env y el comando isql -x.
 
     client = Funcs.connect_ssh(ssh_server, 'bkp-firebird')
+    
     stdin, stdout,stderr = client.exec_command("source setEnvFB25" + letra + ".env")
     stdin.close()
     stdout.close()
     stderr.close()
+
     stdin, stdout,stderr = client.exec_command("isql -x " + ruta_base + " -user " + usuario + " -password " + password + " -o " + bkp_base + "/respaldo_metadata_" + alias_base + "_" + ddmmaaaa + ".sql")
     stdin.close()
     stdout.close()

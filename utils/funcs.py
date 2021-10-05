@@ -85,34 +85,34 @@ class Funcs:
         client.close()
 
 
-    def sudo_su_list(client, *args, **kwargs):
+    # def sudo_su_list(client, *args, **kwargs):
 
-        command = ""
-        for arg in args:
-            command = command + arg + ";"
+    #     command = ""
+    #     for arg in args:
+    #         command = command + arg + ";"
 
-        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\""
+    #     full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\""
 
-        # make sudo su - user commands
-        stdin_, stdout_, stderr_ = client.exec_command(full_command, get_pty=True)
-        status_ = stdout_.channel.recv_exit_status()
+    #     # make sudo su - user commands
+    #     stdin_, stdout_, stderr_ = client.exec_command(full_command, get_pty=True)
+    #     status_ = stdout_.channel.recv_exit_status()
 
-        lista_de_weas = stdout_.read().decode("utf-8").split('\n')[3:]
-        lista_de_otras_weas = []
-        for wea in lista_de_weas:
-            print(wea)
-            lista_de_otras_weas.append(wea.split(' ')[-1].replace('\r', ''))
+    #     lista_de_weas = stdout_.read().decode("utf-8").split('\n')[3:]
+    #     lista_de_otras_weas = []
+    #     for wea in lista_de_weas:
+    #         print(wea)
+    #         lista_de_otras_weas.append(wea.split(' ')[-1].replace('\r', ''))
 
-        print(f'STDOUT: {stdout_.read().decode("utf-8")}')
-        print(f'STDERR: {stderr_.read().decode("utf-8")}')
+    #     print(f'STDOUT: {stdout_.read().decode("utf-8")}')
+    #     print(f'STDERR: {stderr_.read().decode("utf-8")}')
 
-        (lista_de_otras_weas)
+    #     (lista_de_otras_weas)
 
-        stdin_.close()
-        stdout_.close()
-        stderr_.close()
+    #     stdin_.close()
+    #     stdout_.close()
+    #     stderr_.close()
 
-        client.close()
+    #     client.close()
 
 
     # function to make scp between remote servers
@@ -159,7 +159,7 @@ class Funcs:
         remote_server_2_username = "root"
         remote_server_2_password = "Sprt.1215"       
 
-        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\""
+        full_command = "expect -c 'spawn sudo su - -c " + "\"" + command + "\" " + remote_server_2_username + ";expect password;send \"" + remote_server_2_password + "\r\";interact';"
 
         # make sudo su - user commands
         stdin_, stdout_, stderr_ = client.exec_command(full_command, get_pty=True)
