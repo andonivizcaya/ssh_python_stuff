@@ -9,7 +9,7 @@ import csv
 
 ## Parte 1
 # Actualizar esquema de base de datos
-def actualizar_bases(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
+def descomprimir_tar(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web):
 
     #1.- Copiar archivo .tar.bz2 (si cliente está en Edicloud) a la carpeta update_bd_AAAAMMDD
     # Solución: usar la función sudo_su ya creada
@@ -173,7 +173,7 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
     #echo $FIREBIRD, export FIREBIRD_MSG=/opt/firebird25, isql motor.dbz/3050:<ruta base>/<nombre base original> -user <usuario> -pass <password> -i <ruta a .sql>
     subprocess.Popen(["export", "FIREBIRD_MSG=/opt/firebird25"])
     process = subprocess.Popen(["isql", motor + ".dbz/3050:" + ruta_base + "/" + nombre_base_original, "-user", usuario, "-password", password, "-i", upd_database[0].replace("tar.bz2", "sql")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT , cwd=ruta_update_bd)
-    with open(ruta_update_bd + '/log_isql.log', 'w') as f:
+    with open(ruta_update_bd + '/log_isql' + usuario + '.log', 'w') as f:
         for line in process.stdout:
             f.write(line.decode('utf-8'))
         process.wait()
@@ -199,7 +199,7 @@ def actuatliazacion_base(motor, ssh_server, ruta_base, nombre_base, usuario, pas
 
 ## Parte 2
 # Actualizar WebApps
-def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web): #tomcat, #nombre_app, #usuario**, #nombre_app_cliente
+def enviar_archivos_war(motor, ssh_server, ruta_base, nombre_base, usuario, password, alias_base, carpeta_sigad_web): #tomcat, #nombre_app, #usuario**, #nombre_app_cliente
     ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
 
     files = os.listdir(ruta_sigad_web)
@@ -211,28 +211,29 @@ def actualize_webapps(motor, ssh_server, ruta_base, nombre_base, usuario, passwo
             sftp.put(ruta_sigad_web + '/' + file, '/home/athos/'+ file)
             sftp.close()
 
-            client.exec_command('/home/ahthos/actualizar_webapps.sh')
-
-
-
-            
-            
-
-
     #enviar al jimmy la aplicación comprimida
 
+def lista_archivos_war(carpeta_sigad_web):
+    ruta_sigad_web = "/u/firebird25/wrk/" + carpeta_sigad_web
 
+    webapps = []
+    wrk_list = os.listdir(ruta_sigad_web)
 
+    for file in wrk_list:
+        if file.__contains__('.war'):
+            webapps.append(file)  
+    
+    return webapps
 
-def read_file(file_name):
-	for row in open(file_name, 'r'):
-		yield row
+def actualizar_webapps(tomcat, usuario, ssh_server, carpeta_sigad_web):
+    archivos_war = lista_archivos_war(carpeta_sigad_web)
 
+    for archivo_war in archivos_war:
+        client = Funcs.connect_ssh(ssh_server, 'athos')
+        
+        command = '/home/athos/actualizar_webapps.sh ' + tomcat + ' ' + archivo_war + ' ' + usuario
 
-for row in read_file('./actualizar1.csv'):
-    print(row.replace('\n', ''))
-
-
-
-
+        print('Iniciando actualización de WebApp del archivo ' + archivos_war)
+        Funcs.sudo_su(client, command + ' >> actualizar_webapps.log')
+        print('Actualización finalizada.')
 #ejecutar_n1(motor='echocito.sh', ssh_server='willie02.fsz', ruta_base=None, nombre_base=None, usuario=None, password=None, alias_base=None, carpeta_sigad_web=None)
