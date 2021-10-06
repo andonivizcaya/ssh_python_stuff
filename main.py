@@ -73,9 +73,9 @@ with open('./actualizar_webapps.log', 'w') as g:
     for row in read_file('./actualizar_webapps.csv'):
         datos = tuple(row.replace('\n', '').split(','))
 
-        tomcat, usuario, ssh_server, carpeta_sigad_web = datos
-        print('{} ACTUALIZANDO WEBAPPS DEL USUARIO:'.format(datetime.datetime.today()) + usuario + ' EN EL TOMCAT: ' + tomcat + ' Y SERVIDOR: ' + ssh_server)
-        g.write('{} ACTUALIZANDO WEBAPPS DEL USUARIO:'.format(datetime.datetime.today()) + usuario + ' EN EL TOMCAT: ' + tomcat + ' Y SERVIDOR: ' + ssh_server)
-        actualizar_webapps(tomcat, usuario, ssh_server, carpeta_sigad_web)
+        tomcat, ssh_server, archivo_war, nombre_webapp = datos
+        print('{} ACTUALIZANDO WEBAPP: '.format(datetime.datetime.today()) + nombre_webapp + ' EN EL TOMCAT: ' + tomcat + ' Y SERVIDOR: ' + ssh_server)
+        g.write('{} ACTUALIZANDO WEBAPP: '.format(datetime.datetime.today()) + nombre_webapp + ' EN EL TOMCAT: ' + tomcat + ' Y SERVIDOR: ' + ssh_server)
+        actualizar_webapps(tomcat, ssh_server, archivo_war, nombre_webapp)
         print('{} FINALIZANDO ACTUALIZACIÓN'.format(datetime.datetime.today()))
         g.write('{} FINALIZANDO ACTUALIZACIÓN'.format(datetime.datetime.today()))
