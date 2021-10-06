@@ -225,15 +225,14 @@ def lista_archivos_war(carpeta_sigad_web):
     
     return webapps
 
-def actualizar_webapps(tomcat, usuario, ssh_server, carpeta_sigad_web):
-    archivos_war = lista_archivos_war(carpeta_sigad_web)
+def actualizar_webapps(tomcat, ssh_server, archivo_war, nombre_webapp):
+    #archivos_war = lista_archivos_war(carpeta_sigad_web)
 
-    for archivo_war in archivos_war:
-        client = Funcs.connect_ssh(ssh_server, 'athos')
-        
-        command = '/home/athos/actualizar_webapps.sh ' + tomcat + ' ' + archivo_war + ' ' + usuario
+    client = Funcs.connect_ssh(ssh_server, 'athos')
+    
+    command = '/home/athos/actualizar_webapps.sh ' + tomcat + ' ' + archivo_war + ' ' + nombre_webapp
 
-        print('Iniciando actualización de WebApp del archivo ' + archivos_war)
-        Funcs.sudo_su(client, command + ' >> actualizar_webapps.log')
-        print('Actualización finalizada.')
+    print('Iniciando actualización de WebApp del archivo ' + archivo_war)
+    Funcs.sudo_su(client, command + ' >> actualizar_webapps.log')
+    print('Actualización finalizada.')
 #ejecutar_n1(motor='echocito.sh', ssh_server='willie02.fsz', ruta_base=None, nombre_base=None, usuario=None, password=None, alias_base=None, carpeta_sigad_web=None)
